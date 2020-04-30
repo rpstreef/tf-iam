@@ -11,6 +11,11 @@ data "template_file" "_" {
   vars     = var.role_vars
 }
 
+data "template_file" "assumerole" {
+  template = var.assume_role_policy
+  vars     = var.role_vars
+}
+
 # -----------------------------------------------------------------------------
 # Resources: IAM Lambda Roles and Policies
 # -----------------------------------------------------------------------------
@@ -18,7 +23,7 @@ data "template_file" "_" {
 resource "aws_iam_role" "_" {
   name = "${local.resource_name_prefix}-${var.role_name}"
 
-  assume_role_policy = var.assume_role_policy
+  assume_role_policy = data.template_file.assumerole.rendered
 }
 
 resource "aws_iam_policy" "_" {
