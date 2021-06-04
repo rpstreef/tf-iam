@@ -1,3 +1,3 @@
 output "role_arn" {
-  value = aws_iam_role._.arn
+  value = one(aws_iam_role._.*.arn)
 }
