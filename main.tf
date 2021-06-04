@@ -12,11 +12,15 @@ locals {
 # -----------------------------------------------------------------------------
 
 data "template_file" "_" {
+  count = var.iam_module_enabled ? 1 : 0
+
   template = var.template
   vars     = var.role_vars
 }
 
 data "template_file" "assumerole" {
+  count = var.iam_module_enabled ? 1 : 0
+
   template = var.assume_role_policy
   vars     = var.role_vars
 }
