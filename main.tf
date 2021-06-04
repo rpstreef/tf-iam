@@ -1,5 +1,10 @@
 locals {
-  resource_name_prefix = "${var.namespace}-${var.resource_tag_name}"
+  resource_name_prefix = "${var.environment}-${var.resource_tag_name}"
+
+  tags = {
+    Environment = var.environment
+    Name        = var.resource_tag_name
+  }
 }
 
 # -----------------------------------------------------------------------------
@@ -21,20 +26,30 @@ data "template_file" "assumerole" {
 # -----------------------------------------------------------------------------
 
 resource "aws_iam_role" "_" {
+  count = var.iam_module_enabled ? 1 : 0
+
   name = "${local.resource_name_prefix}-${var.role_name}"
 
   assume_role_policy = data.template_file.assumerole.rendered
+
+  tags = local.tags
 }
 
 resource "aws_iam_policy" "_" {
+  count = var.iam_module_enabled ? 1 : 0
+
   name = "${local.resource_name_prefix}-${var.policy_name}"
 
   policy = data.template_file._.rendered
+
+  tags = local.tags
 }
 
 resource "aws_iam_policy_attachment" "_" {
+  count = var.iam_module_enabled ? 1 : 0
+
   name = "${local.resource_name_prefix}-${var.policy_attachment_name}"
 
-  policy_arn = aws_iam_policy._.arn
-  roles      = ["${aws_iam_role._.name}"]
+  policy_arn = one(aws_iam_policy._.*.arn)
+  roles      = [one(aws_iam_role._.*.name)]
 }
