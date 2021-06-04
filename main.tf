@@ -34,7 +34,7 @@ resource "aws_iam_role" "_" {
 
   name = "${local.resource_name_prefix}-${var.role_name}"
 
-  assume_role_policy = data.template_file.assumerole.rendered
+  assume_role_policy = one(data.template_file.assumerole.*.rendered)
 
   tags = local.tags
 }
@@ -44,7 +44,7 @@ resource "aws_iam_policy" "_" {
 
   name = "${local.resource_name_prefix}-${var.policy_name}"
 
-  policy = data.template_file._.rendered
+  policy = one(data.template_file._.*.rendered)
 
   tags = local.tags
 }
